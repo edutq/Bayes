@@ -19,6 +19,26 @@ class Node:
 		self.parents.append(parent_node)
 
 
+def set_parents(query, nodes_list):
+	parents_list = []
+	node = ""
+	#split query by the weird stick
+	for var in query.split('|'):
+		for element in nodes_list:
+			#assign the name to the node
+			if element.name == query[0]:
+				node = element
+				break
+		#check if it has more than one parent
+		if ',' in var[1]:
+			for e in var[1].split(','):
+				node.addParent(e)
+		else: 
+			node.addPartent(query[1])
+	return parents_list
+
+
+
 def create_nodes(nodes_string):
 	nodes_list = []
 	for var in nodes_string.split(','):
