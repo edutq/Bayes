@@ -4,14 +4,20 @@ import json
 
 class Node:
 
-	def __init__(self, name, children, parents, table):
+	def __init__(self, name, parents, table):
 		self.name = name
-		self.children = children
 		self.parents = parents
 		self.table = table
 
 	def __repr__(self):
-		return "Node:\n\tName: %s \n\tChildren: %s \n\tParents: %s \n\tTable: %s\n" % (self.name, self.children, self.parents, self.table)
+		return "Node:\n\tName: %s \n\tParents: %s \n\tTable: %s\n" % (self.name, self.parents, self.table)
+	
+	def getParents(self):
+		return self.parents
+
+	def addParent(self, parent_node):
+		self.parents.append(parent_node)
+
 
 def create_nodes(nodes_string):
 	nodes_list = []
@@ -27,11 +33,13 @@ def parse_probabilities(probabilities_list):
 
 		table_row = {variables[0] : float(variables[1])}
 		statement_list.append(table_row)
-	return statement_list
+	return 	
 
 def bayes(nodes, probabilities, queries):
 	nodes_list = create_nodes(nodes)
+	print(nodes_list)
 	probabilities_list = parse_probabilities(probabilities)
+	print(probabilities_list)
 	return 0
 
 
