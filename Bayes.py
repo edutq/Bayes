@@ -1,6 +1,7 @@
 import itertools
 import copy
 import json
+import decimal
 
 class Node:
 
@@ -28,6 +29,7 @@ class Node:
 			
 			#check if this is the node to add the parents
 			if self.name == var[0]:
+				#add table value
 				self.table[key] = dictionary[key]
 				#check for parents in the condition
 				if len(var) == 2:
@@ -43,9 +45,28 @@ class Node:
 					if self.name == var[0]:
 						self.parents = None
 
+	def completeTable(self):
+		key = None
+		auxdictionary = copy.deepcopy(self.table)
+		for k in self.table:
+			if k[0] == "+":
+				key = k.replace("+", "-", 1)
+
+				if not key in self.table:
+
+					auxdictionary[key] = round(1.0 - self.table[k], 4)
+			elif k[0] == "-":
+				key = k.replace("-", "+", 1)
+
+				if not key in self.table:
+					auxdictionary[key] = round(1.0 - self.table[k], 4)
+
+		self.table = auxdictionary
+
 def set_parents(node_list, probabilities_list):
 	for element in node_list:
 		element.addParentandTable(probabilities_list)
+		element.completeTable()
 
 def create_nodes(nodes_string):
 	nodes_list = []
@@ -65,12 +86,14 @@ def parse_probabilities(probabilities_list):
 
 def bayes(nodes, probabilities, queries):
 	nodes_list = create_nodes(nodes)
-	print(nodes_list)
+	#print(nodes_list)
 	probabilities_list = parse_probabilities(probabilities)
-	print(probabilities_list)
+	#print(probabilities_list)
 	set_parents(nodes_list, probabilities_list)
-	print()
-	print()
+
+	#print(nodes_list)
+
+
 	print(nodes_list)
 	return 0
 
