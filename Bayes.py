@@ -11,30 +11,16 @@ class Node:
 
 	def __repr__(self):
 		return "Node:\n\tName: %s \n\tParents: %s \n\tTable: %s\n" % (self.name, self.parents, self.table)
-	
-	def addTable(self, probabilities_list):
-		#get keys from probability list
-		for key in probabilities_list.keys():
-			#remove signs from string
-			key = key.replace("+", "")
-			key = key.replace("-", "")
-
-			#split by pipe if it appears
-			var = key.split('|')
-
-			#check if the first position is equal to the nodes name
-			if self.name == var[0]:
-				self.table[key] = probabilities_list[key]
-		return table
 
 	def getParents(self):
 		return self.parents
 
-	def addParent(self, dictionary):
+	def addParentandTable(self, dictionary):
 
 		#get keys from dictionary
 		for k in dictionary.keys():
 			#replace '+' and '-' sings from string
+			key = copy.deepcopy(k);
 			k = k.replace("+", "")
 			k = k.replace("-", "")
 			#split query by the weird stick
@@ -42,6 +28,7 @@ class Node:
 			
 			#check if this is the node to add the parents
 			if self.name == var[0]:
+				self.table[key] = dictionary[key]
 				#check for parents in the condition
 				if len(var) == 2:
 					#get all the parents in the condition by spliting by comma
@@ -58,7 +45,7 @@ class Node:
 
 def set_parents(node_list, probabilities_list):
 	for element in node_list:
-		element.addParent(probabilities_list)
+		element.addParentandTable(probabilities_list)
 
 def create_nodes(nodes_string):
 	nodes_list = []
