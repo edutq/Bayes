@@ -12,6 +12,21 @@ class Node:
 	def __repr__(self):
 		return "Node:\n\tName: %s \n\tParents: %s \n\tTable: %s\n" % (self.name, self.parents, self.table)
 	
+	def addTable(self, probabilities_list):
+		#get keys from probability list
+		for key in probabilities_list.keys():
+			#remove signs from string
+			key = key.replace("+", "")
+			key = key.replace("-", "")
+
+			#split by pipe if it appears
+			var = key.split('|')
+
+			#check if the first position is equal to the nodes name
+			if self.name == var[0]:
+				self.table[key] = probabilities_list[key]
+		return table
+
 	def getParents(self):
 		return self.parents
 
@@ -48,7 +63,7 @@ def set_parents(node_list, probabilities_list):
 def create_nodes(nodes_string):
 	nodes_list = []
 	for var in nodes_string.split(','):
-		nodes_list.append(Node(var, [], None))
+		nodes_list.append(Node(var, [], {}))
 
 	return nodes_list
 
