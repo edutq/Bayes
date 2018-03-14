@@ -84,6 +84,42 @@ def parse_probabilities(probabilities_list):
 		
 	return 	statement_list
 
+def parse_query(query): 
+	#this method receives the probability to be calculated and converts it to the conditional probability form
+	#Numerator: P(Evidence, Query)
+	#Denominator: P(Evidence)
+	return parsed_query
+
+def conditional_probability(parsed_query):
+	numerator = 0
+	denominator = 0
+	#get the numerator / denominator from the parsed query
+	#check all the nodes that are given
+	#not given nodes have to be calculated by true and false 
+	#Apply all the permutations possible (call create_permutations method)
+	# for each permutation (I think this is the chain rule(?) --- call chain_rule method)
+		#calculate probabilities for each node in the permutation (multiplication)
+		#consider all the parents of each node
+		#check probability table to calculate each node's probability
+	
+	# Add up all permutations
+	# Do the same for the denominator 
+	#divide 
+	return numerator / denominator
+
+def create_permutations():
+	permutations = []
+
+	return permutations
+
+def chain_rule():
+	#get permutations
+		# for each permutation
+		#calculate probabilities for each node in the permutation (multiplication)
+		#consider all the parents of each node
+		#check probability table to calculate each node's probability
+	return probability 
+
 def bayes(nodes, probabilities, queries):
 	nodes_list = create_nodes(nodes)
 	#print(nodes_list)
