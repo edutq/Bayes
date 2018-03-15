@@ -171,7 +171,8 @@ def conditional_probability(numerator, denominator, node_list):
 		#calculate probabilities for each node in the permutation (multiplication)
 		#consider all the parents of each node
 		#check probability table to calculate each node's probability
-	
+	numeratorvalue = chain_rule(enumeratorNUvariables)
+	denominatorvalue = chain_rule(enumeratorDEvariables)
 	# Add up all permutations
 	# Do the same for the denominator 
 	#divide 
@@ -195,6 +196,7 @@ def appendgivenandhidden(given, combinations):
 			aux.append(element)
 		result.append(aux)
 	return result
+
 def get_ancestors(node, node_list, ancestors):
 	if node.parents:
 		for element in node.parents:
@@ -205,7 +207,6 @@ def get_ancestors(node, node_list, ancestors):
 	else:
 		if node.name not in ancestors:
 			ancestors.append(node.name)
-
 
 def create_permutations(hiddenvariables):
 	combinations = []
@@ -259,9 +260,11 @@ def reverse(combi):
 		rev.append(aux_list)
 	return rev
 
-def chain_rule():
+def chain_rule(list_combinations):
 	#get permutations
 		# for each permutation
+		for element in list_combinations:
+			print(element)
 		#calculate probabilities for each node in the permutation (multiplication)
 		#consider all the parents of each node
 		#check probability table to calculate each node's probability
