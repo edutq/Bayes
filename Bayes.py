@@ -86,9 +86,22 @@ def parse_probabilities(probabilities_list):
 
 def parse_query(query): 
 	#this method receives the probability to be calculated and converts it to the conditional probability form
-	#Numerator: P(Evidence, Query)
-	#Denominator: P(Evidence)
-	return parsed_query
+	numerator = ""
+	denominator = ""
+	for element in query:
+		#print(element)
+		numerator = ""
+		denominator = ""
+		var = element.split("|")
+		if len(var) == 2:
+			numerator = var[0] + ',' + var[1]
+			denominator = var[1]
+		elif len(var) == 1:
+			numerator = var[0]
+		
+		print(numerator)
+		print(denominator)
+	return 0
 
 def conditional_probability(parsed_query):
 	numerator = 0
@@ -122,15 +135,10 @@ def chain_rule():
 
 def bayes(nodes, probabilities, queries):
 	nodes_list = create_nodes(nodes)
-	#print(nodes_list)
 	probabilities_list = parse_probabilities(probabilities)
-	#print(probabilities_list)
 	set_parents(nodes_list, probabilities_list)
-
+	parse_query(queries)
 	#print(nodes_list)
-
-
-	print(nodes_list)
 	return 0
 
 
