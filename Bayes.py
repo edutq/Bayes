@@ -3,6 +3,7 @@ import copy
 import json
 import decimal
 import math
+import numpy
 
 class Node:
 
@@ -106,12 +107,11 @@ def parse_query(query, node_list):
 def conditional_probability(numerator, denominator, node_list):
 
 	#get the numerator / denominator from the parsed query
-	print()
-	print("numerator")
-	
+	#print("EL DENOMINADOR")
+	#print(denominator)
+	#print("AQUI")
 	numeratorhidden = []
 	numeratorgiven = numerator.split(',')
-	print(numeratorgiven)
 	for element in numeratorgiven:
 
 		if "+" in element:
@@ -119,6 +119,7 @@ def conditional_probability(numerator, denominator, node_list):
 		elif "-" in element:
 			auxelement = element.replace('-', "")
 		node = get_node(auxelement, node_list)
+
 		ancestors = []
 		if node.parents:
 			get_ancestors(node, node_list, ancestors)
@@ -127,55 +128,54 @@ def conditional_probability(numerator, denominator, node_list):
 
 			if not "+" + ancestor in numeratorgiven and not "-" + ancestor in numeratorgiven and not ancestor in numeratorhidden:
 				numeratorhidden.append(ancestor)
-	print(numeratorhidden)
 	if numeratorhidden:
 		permitationsnumerator = create_permutations(numeratorhidden)
 		enumeratorNUvariables = appendgivenandhidden(numeratorgiven, permitationsnumerator)
-		print(enumeratorNUvariables)
 	else:
 		enumeratorNUvariables = numeratorgiven
-	print()
-	print("denominator")
-	
-	denominatorhidden = []
-	denominatorgiven = denominator.split(',')
-	print(denominatorgiven)
-	for element in denominatorgiven:
+	#print("NUMERATOR")
+	#print(enumeratorNUvariables)
+	numeratorvalue = chain_rule(enumeratorNUvariables, node_list)
 
-		if "+" in element:
-			auxelement = element.replace('+', "")
-		elif "-" in element:
-			auxelement = element.replace('-', "")
-		node = get_node(auxelement, node_list)
-		ancestors = []
-		if node.parents:
-			get_ancestors(node, node_list, ancestors)
+	if denominator:
+		denominatorhidden = []
+		denominatorgiven = denominator.split(',')
+		for element in denominatorgiven:
 
-		for ancestor in ancestors:
+			if "+" in element:
+				auxelement = element.replace('+', "")
+			elif "-" in element:
+				auxelement = element.replace('-', "")
+			node = get_node(auxelement, node_list)
+			ancestors = []
+			if node.parents:
+				get_ancestors(node, node_list, ancestors)
 
-			if not "+" + ancestor in denominatorgiven and not "-" + ancestor in denominatorgiven and not ancestor in denominatorhidden:
-				denominatorhidden.append(ancestor)
-	print(denominatorhidden)
+			for ancestor in ancestors:
 
-	if denominatorhidden:
-		permitationsdenominator = create_permutations(denominatorhidden)
-		#print(denominatorgiven)
-		enumeratorDEvariables = appendgivenandhidden(denominatorgiven, permitationsdenominator)
-		print(enumeratorDEvariables)
-	else:
-		enumeratorDEvariables = denominatorgiven
-	#check all the nodes that are given
-	#not given nodes have to be calculated by true and false 
-	#Apply all the permutations possible (call create_permutations method)
-	# for each permutation (I think this is the chain rule(?) --- call chain_rule method)
-		#calculate probabilities for each node in the permutation (multiplication)
-		#consider all the parents of each node
-		#check probability table to calculate each node's probability
-	numeratorvalue = chain_rule(enumeratorNUvariables)
-	denominatorvalue = chain_rule(enumeratorDEvariables)
+				if not "+" + ancestor in denominatorgiven and not "-" + ancestor in denominatorgiven and not ancestor in denominatorhidden:
+					denominatorhidden.append(ancestor)
+
+		if denominatorhidden:
+			permitationsdenominator = create_permutations(denominatorhidden)
+			enumeratorDEvariables = appendgivenandhidden(denominatorgiven, permitationsdenominator)
+		else:
+			enumeratorDEvariables = denominatorgiven
+		#print("DENOMINATOR")
+		#print(enumeratorDEvariables)
+		denominatorvalue = chain_rule(enumeratorDEvariables, node_list)
 	# Add up all permutations
 	# Do the same for the denominator 
+		if(denominatorvalue == 0.0):
+			denominatorvalue = 1.0
+	else:
+		denominatorvalue = 1.0
+
 	#divide 
+	#print("numerator -> " + str(numeratorvalue))
+	#print("denominator -> "+ str(denominatorvalue))
+	result = round(numeratorvalue / denominatorvalue, 7)
+	print(result)
 	return 0
 
 def get_node(name, node_list):
@@ -242,7 +242,6 @@ def create_permutations(hiddenvariables):
 	reverse_combinations = reverse(combinations)
 	for element in reverse_combinations:
 		combinations.append(element)
-	#print(reverse_combinations)
 
 	return combinations
 
@@ -260,15 +259,102 @@ def reverse(combi):
 		rev.append(aux_list)
 	return rev
 
-def chain_rule(list_combinations):
+def chain_rule(list_combinations, node_list):
 	#get permutations
+	probability = 0.0
+	bandera = True
 		# for each permutation
-		for element in list_combinations:
-			print(element)
+	#print("\n\n")
+	#print(list_combinations)
+	#print("\n\n")
+	#print("LIST OF combinations")
+	#print(list_combinations)
+	multiplier = 1.0
+	proba = []
+	probabilities = []
+	for element in list_combinations:
+		probabilities = []
+		if type(element) is list: 
+			for item in element:
+				var = item.replace("+", "")
+				name = var.replace("-", "")
+				newnode = get_node(name, node_list)
+				#print(newnode)
+				if newnode.parents:
+					possible_movements = itertools.permutations(range(0, len(newnode.parents)))
+					for p in possible_movements:
+						parents_array = []
+						for l in p:
+							if "+" + newnode.parents[l] in element:
+								parents_array.append("+"+newnode.parents[l])
+								
+							elif "-" + newnode.parents[l] in element:
+								parents_array.append("-"+newnode.parents[l])
+						string = item+"|"
+						
+						for i in range(len(parents_array)):
+							string += parents_array[i]
+							if i < len(parents_array) - 1:
+								string += ","
+						if string in newnode.table:
+							value = newnode.table[string]
+							probabilities.append(value)
+
+				else:
+					value = newnode.table[item]
+					probabilities.append(value)
+			proba.append(probabilities)
+		else:
+			if element:
+				var = element.replace("+", "")
+				name = var.replace("-", "")
+				newnode = get_node(name, node_list)
+				#print(element)
+				if newnode.parents:
+					possible_movements = itertools.permutations(range(0, len(newnode.parents)))
+					for p in possible_movements:
+						parents_array = []
+						for l in p:
+
+							if "+" + newnode.parents[l] in list_combinations:
+								parents_array.append("+"+newnode.parents[l])
+							elif "-" + newnode.parents[l] in list_combinations:
+								parents_array.append("-"+newnode.parents[l])
+						string = element+"|"
+						
+						for i in range(len(parents_array)):
+							string += parents_array[i]
+							if i < len(parents_array) - 1:
+								string += ","
+						#print(string)
+						if string in newnode.table:
+							value = newnode.table[string]
+							probabilities.append(value)
+
+				else:
+					value = newnode.table[element]
+					probabilities.append(value)
+				proba.append(probabilities[0])
+	#print(proba)
+	multiplier = 1.0
+	for element in proba:
+		if type(element) is list:
+			bandera = True
+			multiplier = 1.0
+			for item in element:
+				multiplier *= item
+			probability += multiplier
+		else:
+			bandera = False
+			multiplier *= element
 		#calculate probabilities for each node in the permutation (multiplication)
 		#consider all the parents of each node
 		#check probability table to calculate each node's probability
-	return probability 
+	if bandera:
+		return probability 
+
+	else:
+		return multiplier
 
 def bayes(nodes, probabilities, queries):
 	nodes_list = create_nodes(nodes)

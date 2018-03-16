@@ -10,5 +10,10 @@ Burglary,Earthquake,Alarm,JohnCalls,MaryCalls
 +JohnCalls|-Alarm=0.05
 +MaryCalls|+Alarm=0.7
 +MaryCalls|-Alarm=0.01
-1
+6
 +Burglary|+Earthquake,+JohnCalls
++Earthquake
+-MaryCalls|+Earthquake,+Alarm
++JohnCalls|-Earthquake,-MaryCalls,+Burglary
+-Alarm|-Earthquake,-MaryCalls,+Burglary
+-Alarm,+JohnCalls|-Earthquake,-MaryCalls,+Burglary
