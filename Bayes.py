@@ -3,7 +3,6 @@ import copy
 import json
 import decimal
 import math
-import numpy
 
 class Node:
 
